@@ -1,0 +1,70 @@
+version: "3"
+
+services:
+
+  #
+  # Database
+  #
+  database:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: "somedb"
+      MYSQL_ROOT_PASSWORD: "rootpassword"
+      MYSQL_USER: "someusername"
+      MYSQL_PASSWORD: "somepassword"
+    ports:
+      - 3306:3306
+
+  #
+  # Database
+  #
+  databaseProd:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: "somedbProd"
+      MYSQL_ROOT_PASSWORD: "rootpassword"
+      MYSQL_USER: "someusername"
+      MYSQL_PASSWORD: "somepassword"
+    ports:
+      - 3307:3306
+
+  #
+  # API
+  #
+  apiStage:
+    image: directus/api:latest
+    environment:
+      DATABASE_HOST: database
+      DATABASE_NAME: "somedb"
+      DATABASE_USERNAME: "someusername"
+      DATABASE_PASSWORD: "somepassword"
+      ADMIN_EMAIL: "admin@localhost.com"
+      ADMIN_PASSWORD: "directusrocks"
+    ports:
+      - 7001:80
+
+  #
+  # API
+  #
+  apiProd:
+    image: directus/api:latest
+    environment:
+      DATABASE_HOST: databaseProd
+      DATABASE_NAME: "somedbProd"
+      DATABASE_USERNAME: "someusername"
+      DATABASE_PASSWORD: "somepassword"
+      ADMIN_EMAIL: "admin@localhost.com"
+      ADMIN_PASSWORD: "directusrocks"
+    ports:
+      - 7002:80
+
+  #
+  # Dashboard
+  #
+  app:
+    image: directus/app:latest
+    environment:
+      API_ENDPOINT_STAGING: "STAGING; http://localhost:7001/_/"
+      API_ENDPOINT_PRODUCTION: "PRODUCTION; http://localhost:7002/_/"
+    ports:
+      - 8000:80
